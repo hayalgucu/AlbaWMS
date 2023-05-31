@@ -1,6 +1,8 @@
 package com.hayalgucu.albawms
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -23,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.hayalgucu.albawms.prefstore.PrefStoreImpl
 import com.hayalgucu.albawms.screens.AdminSettingsScreen
 import com.hayalgucu.albawms.screens.GetShelfScreen
 import com.hayalgucu.albawms.screens.ItemInfoScreen
@@ -32,19 +35,42 @@ import com.hayalgucu.albawms.screens.MainScreen
 import com.hayalgucu.albawms.screens.SettingsScreen
 import com.hayalgucu.albawms.screens.AddRemoveItemScreen
 import com.hayalgucu.albawms.ui.theme.AlbaWMSTheme
+import com.hayalgucu.albawms.util.inactivityTime
 import com.hayalgucu.albawms.util.pageText
 import com.hayalgucu.albawms.util.scaffoldPadding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            AlbaWMSTheme {
 
+            handler = Handler(Looper.getMainLooper())
+            runnable = Runnable {
+                kotlin.run {
+                    if (navController.currentBackStackEntry?.destination?.route != "login") {
+                        GlobalScope.launch {
+                            PrefStoreImpl(this@MainActivity.applicationContext).saveUser(0)
+                        }
+                        navController.navigate("login")
+                        /*{
+                            popUpTo(navController.currentBackStackEntry?.destination?.route ?: "") {
+                                inclusive = true
+                            }
+                        }*/
+                    }
+                }
+                startHandler()
+            }
+
+            AlbaWMSTheme {
                 Scaffold(topBar = {
                     TopAppBar {
                         Row(
@@ -77,6 +103,19 @@ class MainActivity : ComponentActivity() {
 
             }
         }
+    }
+    private fun startHandler() {
+        handler.postDelayed(runnable, inactivityTime.value * 60 * 1000)
+    }
+
+    private fun stopHandler() {
+        handler.removeCallbacks(runnable)
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        stopHandler()
+        startHandler()
     }
 }
 

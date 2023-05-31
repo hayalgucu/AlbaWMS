@@ -181,7 +181,8 @@ fun AdminSettingsScreen(
                 Modifier
                     .fillMaxWidth()
                     .padding(15.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.allow_keyboards), fontSize = 18.sp,
@@ -193,7 +194,7 @@ fun AdminSettingsScreen(
                 })
             }
 
-            Row(
+/*            Row(
                 Modifier
                     .fillMaxWidth()
                     .padding(15.dp)
@@ -216,7 +217,7 @@ fun AdminSettingsScreen(
                 }) {
                     CustomIcon(icon = Icons.Rounded.Done, cd = "Kaydet")
                 }
-            }
+            }*/
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Button(onClick = {

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.hayalgucu.albawms.models.LoginModel
 import com.hayalgucu.albawms.prefstore.PrefsStore
 import com.hayalgucu.albawms.services.api.ApiService
+import com.hayalgucu.albawms.util.inactivityTime
 import com.hayalgucu.albawms.util.machineList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
@@ -51,6 +52,13 @@ class LoginViewModel @Inject constructor(
 
     init {
         getUsername()
+        getInactivity()
+    }
+
+    private fun getInactivity() {
+        viewModelScope.launch {
+            inactivityTime.value = prefsStore.getInactivity().first()
+        }
     }
 
     private fun getUsername() {
