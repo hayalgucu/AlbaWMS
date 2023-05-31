@@ -1,0 +1,65 @@
+<resources>
+    <string name="app_name" translatable="false">AlbaWMS</string>
+    <string name="reader_type">"Reader Type: "</string>
+    <string name="admin_settings">Admin Settings</string>
+    <string name="call_info_item">Item Info/Bring</string>
+    <string name="call_info_location">Location\nInfo/Bring</string>
+    <string name="call_tray">Call Tray</string>
+    <string name="settings">Settings</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">LOGIN</string>
+    <string name="warning">Warning</string>
+    <string name="machine_no">"Machine No: "</string>
+    <string name="server_address">Server Address</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="inactivity">Inactivity (min)</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="item_code">Item Code</string>
+    <string name="location">Location</string>
+    <string name="quantity">Amount</string>
+    <string name="item_name">Item Name</string>
+    <string name="machine">Machine</string>
+    <string name="tray">Tray</string>
+    <string name="admin">Admin</string>
+    <string name="admin_password">Admin Password</string>
+    <string name="take_place_item">Take/Place Item to Shelf</string>
+    <string name="username_password_cannotbe_blank">Username or password cannot be blank.</string>
+    <string name="no_item_in_location">No item found in given location.</string>
+    <string name="item_quant_not_zero">Item quantity cannot be 0.</string>
+    <string name="item_not_found">Item not found.</string>
+    <string name="search_can_not_blank">Search field cannot be blank.</string>
+    <string name="will_shutdown_for_service">App will shutdown for saving settings.</string>
+    <string name="server_example">Example: https:\\\\hg.api.com/api/</string>
+    <string name="url_saved">Url is saved. Please restart application!</string>
+    <string name="allow_keyboards">Allow keyboard usage</string>
+    <string name="start_date">Start Date (Day)</string>
+    <string name="settings_saved">Settings are saved. Please restart application.</string>
+    <string name="settings_cant_saved">Settings cannot saved. Inactivity cannot be blank.</string>
+    <string name="process_succeed">Transaction completed successfully.</string>
+    <string name="something_went_wrong">Something went wrong.</string>
+    <string name="field_cannot_blank">Field cannot be empty.</string>
+    <string name="enter_admin_password">Please enter admin password.</string>
+    <string name="wrong_location">Wrong Location</string>
+    <string name="move_quant_mustbe_greater_zero">The amount to be moved must be greater than 0.</string>
+    <string name="not_enough_item_for_move">There is no stock to be moved.</string>
+    <string name="add_quant_mustbe_greater_zero">The amount to be added must be greater than 0.</string>
+    <string name="item_notin_location">There are no items selected in the selected location.</string>
+    <string name="park">Park</string>
+    <string name="barcode">Barcode</string>
+
+    <string name="item_code_params">Item Code: %s</string>
+    <string name="item_name_params">Item Name: %s</string>
+    <string name="warehouse_quantity_params">Warehouse Amount: %s</string>
+    <string name="location_params">Location: %s</string>
+
+    <string name="confirm_placement">Do you want to place %3$s items of %1$s at position %2$s?</string>
+    <string name="confirm_take">Do you want to take %3$s of the item %1$s from location %2$s?</string>
+
+    <string name="version_params">Version: %s</string>
+    <string name="exit">Logout</string>
+    <string name="you_will_logout">You will logout.</string>
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="reader_type">Okuyucu Tipi:</string>
+    <string name="admin_settings">Admin Ayarları</string>
+    <string name="call_info_item">Stok Bilgisi/Çağırma</string>
+    <string name="call_info_location">Konum Bilgisi/Çağırma</string>
+    <string name="call_tray">Tepsi Çağır</string>
+    <string name="take_place_item">Raftan\nÜrün Al/Yerleştir</string>
+    <string name="settings">Ayarlar</string>
+    <string name="error">Hata</string>
+    <string name="ok">Tamam</string>
+    <string name="username_password_cannotbe_blank">Kullanıcı adı veya şifre boş bırakılamaz.</string>
+    <string name="username">Kullanıcı Adı</string>
+    <string name="password">Parola</string>
+    <string name="login">GİRİŞ</string>
+    <string name="no_item_in_location">Verilen konumda stok bulunamadı.</string>
+    <string name="item_quant_not_zero">Ürün miktarı 0 değil.</string>
+    <string name="warning">Uyarı</string>
+    <string name="item_not_found">Ürün bulunamadı.</string>
+    <string name="search_can_not_blank">Arama cubugu bos bırakılamaz.</string>
+    <string name="machine_no">"Makine No: "</string>
+    <string name="will_shutdown_for_service">Uygulama ayarlarının kaydı için kapatılacak.</string>
+    <string name="server_address">Server Adresi</string>
+    <string name="server_example">Örnek: https:\\hg.api.com/api/</string>
+    <string name="url_saved">Url kaydedildi. Uygulamayı tamamen kapatıp açınız!</string>
+    <string name="inactivity">Hareketsizlik (dk)</string>
+    <string name="allow_keyboards">Klavye Kullanımına İzin Ver</string>
+    <string name="start_date">Başlangıç Tarih (Gün)</string>
+    <string name="save_settings">Ayarları Kaydet</string>
+    <string name="settings_saved">Ayarlar kaydedildi. Uygulamayı kapatıp açınız.</string>
+    <string name="settings_cant_saved">Ayarlar kaydedilemedi. Hareketsizlik boş bırakılamaz.</string>
+    <string name="process_succeed">İşlem başarı ile tamamlandı.</string>
+    <string name="something_went_wrong">Bir hata oluştu.</string>
+    <string name="confirm">Onay</string>
+    <string name="cancel">İptal</string>
+    <string name="item_code">Stok Kodu</string>
+    <string name="location">Konum</string>
+    <string name="quantity">Miktar</string>
+    <string name="field_cannot_blank">Alan Boş Bırakılamaz</string>
+    <string name="move_quant_mustbe_greater_zero">Taşınacak miktar 0\'dan büyük olmalı.</string>
+    <string name="not_enough_item_for_move">Taşınacak miktarda stok bulunmamakta.</string>
+    <string name="add_quant_mustbe_greater_zero">Eklenecek miktar 0\'dan büyük olmalı.</string>
+    <string name="wrong_location">Yanlış Konum</string>
+    <string name="item_notin_location">Seçilen konumda seçili ürün yok.</string>
+    <string name="item_name">Stok Adı</string>
+    <string name="machine">Makine</string>
+    <string name="tray">Tepsi</string>
+    <string name="admin">Admin</string>
+    <string name="enter_admin_password">Admin şifresini giriniz.</string>
+    <string name="admin_password">Admin Şifresi</string>
+    <string name="park">Park</string>
+    <string name="barcode">Barkod</string>
+
+    <string name="item_code_params">Stok Kodu: %s</string>
+    <string name="item_name_params">Stok Adı: %s</string>
+    <string name="warehouse_quantity_params">Depo Miktarı: %s</string>
+    <string name="location_params">Konum: %s</string>
+
+    <string name="confirm_placement">%1$s ürününden %3$s adet %2$s konumuna yerleştirmek istiyor musunuz?</string>
+    <string name="confirm_take">%1$s ürününü %2$s konumundan %3$s adet almak istiyor musunuz?</string>
+
+    <string name="version_params">Versiyon: %s</string>
+    <string name="exit">Çıkış</string>
+    <string name="you_will_logout">Hesaptan çıkılacak.</string>
+
+</resources>
