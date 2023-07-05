@@ -1,6 +1,8 @@
 package com.hayalgucu.albawms.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
@@ -17,6 +21,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -51,10 +56,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hayalgucu.albawms.R
 import com.hayalgucu.albawms.customviews.CustomIcon
 import com.hayalgucu.albawms.customviews.ItemLocationList
+import com.hayalgucu.albawms.customviews.TableCell
+import com.hayalgucu.albawms.customviews.TableHeaderCell
 import com.hayalgucu.albawms.ui.theme.AlbaWMSTheme
+import com.hayalgucu.albawms.ui.theme.Primary200
 import com.hayalgucu.albawms.util.ScannerOptions
+import com.hayalgucu.albawms.util.largeWidth
+import com.hayalgucu.albawms.util.midWidth
 import com.hayalgucu.albawms.util.scaffoldPadding
 import com.hayalgucu.albawms.util.suffix
+import com.hayalgucu.albawms.util.toItemLocationModel
 import com.hayalgucu.albawms.viewmodels.AddRemoveItemViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -66,7 +77,7 @@ fun AddRemoveItemScreen(
     val focusManager = LocalFocusManager.current
 
     val itemFocusRequester = remember { FocusRequester() }
-    val locationFocusRequester = remember { FocusRequester() }
+//    val locationFocusRequester = remember { FocusRequester() }
     val quantityFocusRequester = remember { FocusRequester() }
 
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -77,17 +88,19 @@ fun AddRemoveItemScreen(
     val locationEnabled = remember { mutableStateOf(false) }
     val quantityEnabled = remember { mutableStateOf(false) }
 
-    var addEnabled by remember { mutableStateOf(true) }
-    var removeEnabled by remember { mutableStateOf(true) }
+    var addEnabled by remember { viewModel.addEnabled }
+    var removeEnabled by remember { viewModel.removeEnabled }
+
+    var selectedLocation = remember { viewModel.selectedLocation }
 
     val itemText = remember { mutableStateOf("") }
-    val locationText = remember { mutableStateOf("") }
+    val locationText = remember { viewModel.locationText }
     val quantityText = remember { mutableStateOf("") }
 
     val itemLocations by remember { viewModel.itemLocations }
 
-    val errorMessage by remember { viewModel.errorMessage }
-    val isLoading by remember { viewModel.isLoading }
+    var errorMessage by remember { viewModel.errorMessage }
+    var isLoading by remember { viewModel.isLoading }
 
     val item by remember { viewModel.item }
 
@@ -99,10 +112,14 @@ fun AddRemoveItemScreen(
 
     val keyboardOptions by remember { viewModel.keyboardOptions }
 
+    var showLocationDialog by remember { viewModel.showLocationDialog }
+    var locationList = remember { viewModel.locationList }
+
 
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
-            Toast.makeText(context, context.getString(R.string.process_succeed), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.process_succeed), Toast.LENGTH_SHORT)
+                .show()
             viewModel.succeed.value = false
 
             addEnabled = true
@@ -145,10 +162,22 @@ fun AddRemoveItemScreen(
     LaunchedEffect(itemEnabled.value, locationEnabled.value, quantityEnabled.value) {
         if (itemEnabled.value) {
             itemFocusRequester.requestFocus()
-        } else if (locationEnabled.value) {
+        } /*else if (locationEnabled.value) {
             locationFocusRequester.requestFocus()
-        } else if (quantityEnabled.value) {
+        }*/ else if (quantityEnabled.value) {
             quantityFocusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(selectedLocation.value) {
+        selectedLocation.value?.let {
+            locationText.value = it.altkonum
+            if (removeEnabled)
+                viewModel.getLocationStok(item!!.stkKodu, locationText.value)
+            else if (addEnabled)
+                viewModel.checkIsLocationValid(locationText.value)
+        } ?: kotlin.run {
+            locationText.value = ""
         }
     }
 
@@ -222,10 +251,25 @@ fun AddRemoveItemScreen(
                     onDismissRequest = {},
                     title = { Text(text = stringResource(id = R.string.warning)) },
                     text = {
-                        if (addEnabled && !removeEnabled)
-                            Text(stringResource(id = R.string.confirm_placement, itemText.value, locationText.value, quantityText.value))
-                        else
-                        Text(stringResource(id = R.string.confirm_take, itemText.value, locationText.value, quantityText.value))
+                        if (addEnabled && !removeEnabled) {
+                            Text(
+                                stringResource(
+                                    id = R.string.confirm_placement,
+                                    itemText.value,
+                                    locationText.value,
+                                    quantityText.value
+                                )
+                            )
+                        } else {
+                            Text(
+                                stringResource(
+                                    id = R.string.confirm_take,
+                                    itemText.value,
+                                    locationText.value,
+                                    quantityText.value
+                                )
+                            )
+                        }
                     },
                     confirmButton = {
                         TextButton(onClick = {
@@ -273,6 +317,39 @@ fun AddRemoveItemScreen(
                         }
                     }
                 )
+            }
+
+            if (showLocationDialog) {
+                Dialog(onDismissRequest = {
+                    showLocationDialog = false
+                }) {
+                    Surface() {
+                        Column(Modifier.padding(5.dp)) {
+                            LazyColumn() {
+                                item {
+                                    Row(Modifier.background(Primary200)) {
+                                        TableHeaderCell(
+                                            text = stringResource(id = R.string.location),
+                                            largeWidth
+                                        )
+                                    }
+                                }
+                                items(locationList) { rowItem ->
+                                    Row(
+                                        Modifier
+                                            .clickable {
+                                                locationText.value = rowItem.location
+                                                selectedLocation.value =
+                                                    rowItem.toItemLocationModel()
+                                                showLocationDialog = false
+                                            }) {
+                                        TableCell(text = rowItem.location, largeWidth)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -378,42 +455,34 @@ fun AddRemoveItemScreen(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(locationFocusRequester)
-                    .onFocusEvent {
-                        if (it.isFocused && !keyboardOptions) {
-                            keyboardController?.hide()
+                    .clickable {
+                        if (!removeEnabled && addEnabled && item != null) {
+                            isLoading = true
+                            viewModel.getAllLocations()
                         }
-                    },
+                    }
+                /*.focusRequester(locationFocusRequester)
+                .onFocusEvent {
+                    if (it.isFocused && !keyboardOptions) {
+                        keyboardController?.hide()
+                    }
+                }*/,
                 value = locationText.value,
-                onValueChange = {
-                    ScannerOptions(
-                        inputString = it,
-                        searchText = locationText,
-                        keyboardOptions = keyboardOptions,
-                        afterSuffixFunc = {
-                            if (item != null && locationText.value != "") {
-                                if (removeEnabled)
-                                    viewModel.getLocationStok(item!!.stkKodu, locationText.value)
-                                else if (addEnabled)
-                                    viewModel.checkIsLocationValid(locationText.value)
-                            }
-                        }
-                    )
-                },
+                onValueChange = { },
                 label = { Text(text = stringResource(R.string.location)) },
                 textStyle = TextStyle(
                     fontSize = 20.sp
                 ),
-                singleLine = true,
-                keyboardActions = KeyboardActions(onDone = {
-                    if (item != null && locationText.value != "") {
-                        if (removeEnabled)
-                            viewModel.getLocationStok(item!!.stkKodu, locationText.value)
-                        else if (addEnabled)
-                            viewModel.checkIsLocationValid(locationText.value)
-                    }
-                }),
-                enabled = locationEnabled.value
+                /*                singleLine = true,
+                                keyboardActions = KeyboardActions(onDone = {
+                                    if (item != null && locationText.value != "") {
+                                        if (removeEnabled)
+                                            viewModel.getLocationStok(item!!.stkKodu, locationText.value)
+                                        else if (addEnabled)
+                                            viewModel.checkIsLocationValid(locationText.value)
+                                    }
+                                }),*/
+                enabled = false // locationEnabled.value
             )
 
             OutlinedTextField(
@@ -422,6 +491,10 @@ fun AddRemoveItemScreen(
                     .focusRequester(quantityFocusRequester),
                 value = quantityText.value,
                 onValueChange = {
+                    if (selectedLocation.value == null) {
+                        errorMessage = context.getString(R.string.no_location_selected)
+                        return@OutlinedTextField
+                    }
                     if (it.matches("-?\\d+(\\.\\d+)?".toRegex()) || it == "")
                         quantityText.value = it.replace(suffix, "")
                     if (it.contains(Regex(suffix))) {
@@ -432,11 +505,22 @@ fun AddRemoveItemScreen(
                                 if (quantityText.value.toInt() <= viewModel.selectedLocation.value!!.sipKalan) {
                                     doneEnable = true
                                     quantityEnabled.value = false
+                                } else {
+                                    viewModel.errorMessage.value =
+                                        if (quantityText.value == "") context.getString(R.string.field_cannot_blank)
+                                        else if (quantityText.value.toInt() == 0) context.getString(
+                                            R.string.move_quant_mustbe_greater_zero
+                                        )
+                                        else context.getString(R.string.not_enough_item_for_move)
                                 }
                             } else if (addEnabled && !removeEnabled) {
                                 if (quantityText.value.toInt() > 0) {
                                     doneEnable = true
                                     quantityEnabled.value = false
+                                } else {
+                                    viewModel.errorMessage.value =
+                                        if (quantityText.value == "") context.getString(R.string.field_cannot_blank)
+                                        else context.getString(R.string.add_quant_mustbe_greater_zero)
                                 }
                             }
                         }
@@ -448,11 +532,15 @@ fun AddRemoveItemScreen(
                 ),
                 singleLine = true,
                 keyboardActions = KeyboardActions(onDone = {
+                    if (selectedLocation.value == null) {
+                        errorMessage = context.getString(R.string.no_location_selected)
+                        return@KeyboardActions
+                    }
                     //Check Miktar
                     if (quantityText.value != "") {
                         focusManager.clearFocus()
                         if (removeEnabled && !addEnabled) {
-                            if (quantityText.value.toInt() <= productLocationQuantity) {
+                            if (quantityText.value.toInt() <= viewModel.selectedLocation.value!!.sipKalan) {
                                 doneEnable = true
                                 quantityEnabled.value = false
                             } else {
@@ -489,9 +577,15 @@ fun AddRemoveItemScreen(
 
             if (itemLocations.isNotEmpty()) {
                 //List
-                ItemLocationList(
-                    itemLocationModelList = viewModel.locations
-                )
+                if (itemLocations.size > 1) {
+                    ItemLocationList(
+                        itemLocationModelList = viewModel.locations,
+                        selectedLocation,
+                        isClickable = true
+                    )
+                } else {
+                    ItemLocationList(itemLocationModelList = viewModel.locations)
+                }
             }
         }
     }

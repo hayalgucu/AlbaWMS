@@ -9,7 +9,7 @@ data class LocationModel(
     @SerialName("degisti")
     val degisti: Boolean,
     @SerialName("DepoMiktari")
-    val depoMiktari: Int,
+    val depoMiktari: Double,
     @SerialName("hca_create_date")
     val hcaCreateDate: String,
     @SerialName("hca_create_user")

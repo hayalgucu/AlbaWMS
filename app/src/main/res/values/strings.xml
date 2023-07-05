@@ -29,7 +29,7 @@
     <string name="take_place_item">Take/Place Item to Shelf</string>
     <string name="username_password_cannotbe_blank">Username or password cannot be blank.</string>
     <string name="no_item_in_location">No item found in given location.</string>
-    <string name="item_quant_not_zero">Item quantity cannot be 0.</string>
+    <string name="item_quant_not_zero">Item amount cannot be 0.</string>
     <string name="item_not_found">Item not found.</string>
     <string name="search_can_not_blank">Search field cannot be blank.</string>
     <string name="will_shutdown_for_service">App will shutdown for saving settings.</string>
@@ -62,4 +62,7 @@
     <string name="version_params">Version: %s</string>
     <string name="exit">Logout</string>
     <string name="you_will_logout">You will logout.</string>
+
+    <string name="ask_amount">How many of %1s do you want to take from location %2s?</string>
+    <string name="no_location_selected">No location selected.</string>
 </resources>

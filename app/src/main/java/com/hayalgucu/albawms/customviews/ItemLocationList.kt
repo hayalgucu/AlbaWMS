@@ -65,6 +65,8 @@ fun ItemLocationRowItem(
                 if (isClickable) {
                     if (selectedLocation.value == null)
                         selectedLocation.value = itemLocationModel
+                    else if (selectedLocation.value != itemLocationModel)
+                        selectedLocation.value = itemLocationModel
                     else
                         selectedLocation.value = null
                 }

@@ -8,6 +8,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import java.util.concurrent.TimeUnit
 
 class HttpClientFactory {
 
@@ -15,6 +16,8 @@ class HttpClientFactory {
         engine {
             config {
                 hostnameVerifier { _, _ -> true }
+                readTimeout(40, TimeUnit.SECONDS)
+                writeTimeout(40, TimeUnit.SECONDS)
             }
         }
         defaultRequest {

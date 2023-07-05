@@ -10,6 +10,7 @@ import com.hayalgucu.albawms.models.GetItemModel
 import com.hayalgucu.albawms.models.GetLocationListModel
 import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
+import com.hayalgucu.albawms.models.TakeItemConfirmationModel
 import com.hayalgucu.albawms.prefstore.PrefsStore
 import com.hayalgucu.albawms.services.api.ApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ class ItemInfoViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
+    val succeed = mutableStateOf(false)
     val context = getApplication<Application>()
 
     var itemList = mutableStateOf<List<ItemModel>>(listOf())
@@ -45,6 +47,8 @@ class ItemInfoViewModel @Inject constructor(
 
     val keyboardOptions = mutableStateOf(false)
 
+    val shelfCame = mutableStateOf(false)
+
     init {
         getKeyboardOptions()
     }
@@ -63,10 +67,36 @@ class ItemInfoViewModel @Inject constructor(
                 val shelfNo = loc.hcrKonumNo
                 val response = apiService.getShelf(GetLocationListModel(machineno = machineNo, shelfno = shelfNo))
                 isLoading.value = false
+                shelfCame.value = response.isSuccessful
                 response.error?.errors?.let {
                     errorMessage.value = it.first()
                 }
             }
+        }
+    }
+
+    fun confirmTake(stokCode: String, location: String, quantity: Int) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            val response = apiService.setConfirmationTakeItem(
+                TakeItemConfirmationModel(
+                    stockcode = stokCode,
+                    location = location,
+                    quantity = quantity,
+                    machineno = selectedLocation.value!!.hcrMakineNo,
+                    shelfno = selectedLocation.value!!.hcrKonumNo
+                )
+            )
+
+            isLoading.value = false
+            if (response.isSuccessful) {
+                errorMessage.value = ""
+                succeed.value = true
+            } else {
+                errorMessage.value = response.error?.errors?.first() ?: "Error"
+            }
+
         }
     }
 

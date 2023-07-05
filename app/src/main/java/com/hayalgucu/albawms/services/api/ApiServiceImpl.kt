@@ -7,13 +7,16 @@ import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
 import com.hayalgucu.albawms.models.ItemsInLocationModel
 import com.hayalgucu.albawms.models.LocationInfoModel
+import com.hayalgucu.albawms.models.LocationListModel
 import com.hayalgucu.albawms.models.LocationModel
 import com.hayalgucu.albawms.models.LoginModel
 import com.hayalgucu.albawms.models.LoginResponseModel
 import com.hayalgucu.albawms.models.MachineModel
+import com.hayalgucu.albawms.models.ProgramUpdateModel
 import com.hayalgucu.albawms.models.ResponseModel
 import com.hayalgucu.albawms.models.ShelfModel
 import com.hayalgucu.albawms.models.TakeItemConfirmationModel
+import com.hayalgucu.albawms.util.machineList
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
@@ -97,6 +100,14 @@ class ApiServiceImpl(private val url: String) : ApiService {
         return getApiCall {
             client.post("$url/${HttpRoutes.GetLocation}") {
                 parameter("location", location)
+            }.body()
+        }
+    }
+
+    override suspend fun getAllLocations(): ResponseModel<List<LocationListModel>> {
+        return getApiCall {
+            client.post("$url/${HttpRoutes.GetAllLocations}") {
+                setBody(emptyArray<Int>())
             }.body()
         }
     }
@@ -196,6 +207,15 @@ class ApiServiceImpl(private val url: String) : ApiService {
         return getApiCall {
             client.post("$url/${HttpRoutes.PlaceStockToShelf}") {
                 setBody(takeItemConfirmationModel)
+            }.body()
+        }
+    }
+
+    //App Info
+    override suspend fun getAppVersion(appId: Int): ResponseModel<ProgramUpdateModel> {
+        return getApiCall {
+            client.get("") {
+                parameter("id", appId)
             }.body()
         }
     }

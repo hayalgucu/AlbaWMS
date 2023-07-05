@@ -1,14 +1,22 @@
 package com.hayalgucu.albawms.screens
 
+import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -18,6 +26,7 @@ import androidx.compose.material.icons.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Unarchive
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -53,6 +64,8 @@ fun ItemInfoScreen(
     viewModel: ItemInfoViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = FocusRequester()
@@ -78,6 +91,39 @@ fun ItemInfoScreen(
     val selectedLocation = remember { viewModel.selectedLocation }
 
     var imageBtnEnabled by remember { mutableStateOf(false) }
+
+    var shelfCame by remember { viewModel.shelfCame }
+    var showAmountDialog by remember { mutableStateOf(false) }
+    var amountText by remember { mutableStateOf("") }
+    var succeed by remember { viewModel.succeed }
+
+    LaunchedEffect(shelfCame) {
+        if (shelfCame) {
+            shelfCame = false
+            showAmountDialog = true
+        }
+    }
+
+    LaunchedEffect(succeed) {
+        if (succeed) {
+            Toast.makeText(context, context.getString(R.string.process_succeed), Toast.LENGTH_SHORT).show()
+            viewModel.succeed.value = false
+
+            viewModel.searchProduct(
+                selectedItem.value!!.stkKodu,
+                searchParams[0]
+            )
+
+            isLocationTried = false
+
+            showAmountDialog = false
+        }
+    }
+
+    LaunchedEffect(showAmountDialog) {
+        if (!showAmountDialog)
+            amountText = ""
+    }
 
     AlbaWMSTheme {
         Column(
@@ -114,7 +160,62 @@ fun ItemInfoScreen(
                 }
 
                 if (emptyTextError.value.isNotEmpty()) {
-                    ShowAlertDialog(text = stringResource(R.string.search_can_not_blank), errorState = emptyTextError)
+                    ShowAlertDialog(
+                        text = stringResource(R.string.search_can_not_blank),
+                        errorState = emptyTextError
+                    )
+                }
+
+                if (showAmountDialog) {
+                    Dialog(onDismissRequest = { showAmountDialog = false }) {
+                        Column(
+                            modifier = Modifier
+                                .background(Color.Black)
+                                .width(512.dp)
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    id = R.string.ask_amount,
+                                    selectedItem.value!!.stkKodu,
+                                    selectedLocation.value!!.altkonum
+                                )
+                            )
+
+                            OutlinedTextField(
+                                value = amountText,
+                                onValueChange = { amountText = it },
+                                label = { Text(text = stringResource(R.string.quantity)) })
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Button(onClick = { showAmountDialog = false }) {
+                                    Text(text = stringResource(id = R.string.cancel))
+                                }
+                                Spacer(modifier = Modifier.width(15.dp))
+                                Button(onClick = {
+                                    if (amountText.toInt() <= viewModel.selectedLocation.value!!.sipKalan) {
+                                        viewModel.confirmTake(
+                                            selectedItem.value!!.stkKodu,
+                                            selectedLocation.value!!.altkonum,
+                                            amountText.toInt()
+                                        )
+                                    } else {
+                                        showAmountDialog = false
+                                        viewModel.errorMessage.value =
+                                            if (amountText == "") context.getString(R.string.field_cannot_blank)
+                                            else if (amountText.toInt() == 0) context.getString(R.string.move_quant_mustbe_greater_zero)
+                                            else context.getString(R.string.not_enough_item_for_move)
+                                    }
+                                }) {
+                                    Text(text = stringResource(id = R.string.confirm))
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Column(
@@ -125,9 +226,13 @@ fun ItemInfoScreen(
                             .fillMaxWidth()
                             .padding(10.dp)
                     ) {
-                        val searchBoxItems = listOf(stringResource(id = R.string.item_code), stringResource(R.string.barcode), stringResource(
-                            id = R.string.item_name
-                        ))
+                        val searchBoxItems = listOf(
+                            stringResource(id = R.string.item_code),
+                            stringResource(R.string.barcode),
+                            stringResource(
+                                id = R.string.item_name
+                            )
+                        )
                         ItemSearchBox(
                             fulfillment = .8f,
                             searchText = searchText,
@@ -237,7 +342,12 @@ fun ItemInfoScreen(
                             .padding(10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(stringResource(id = R.string.item_code_params, selectedItem.value?.stkKodu ?: ""))
+                        Text(
+                            stringResource(
+                                id = R.string.item_code_params,
+                                selectedItem.value?.stkKodu ?: ""
+                            )
+                        )
                     }
 
                     Row(
@@ -246,7 +356,12 @@ fun ItemInfoScreen(
                             .padding(10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(stringResource(id = R.string.warehouse_quantity_params, selectedItem.value?.depoMiktari ?: "0"))
+                        Text(
+                            stringResource(
+                                id = R.string.warehouse_quantity_params,
+                                selectedItem.value?.depoMiktari ?: "0"
+                            )
+                        )
                     }
 
                     Row(
@@ -257,8 +372,13 @@ fun ItemInfoScreen(
                     ) {
                         selectedItem.value?.stkAdi?.let {
                             println(it.length)
-                            Text(text = if (it.length > 45) stringResource(id = R.string.item_name_params, it.subSequence(0, 45))
-                            else stringResource(id = R.string.item_name_params, it))
+                            Text(
+                                text = if (it.length > 45) stringResource(
+                                    id = R.string.item_name_params,
+                                    it.subSequence(0, 45)
+                                )
+                                else stringResource(id = R.string.item_name_params, it)
+                            )
                         } ?: kotlin.run {
                             Text("Stok Adı: ")
                         }
@@ -309,21 +429,25 @@ fun ItemInfoScreen(
                         }
                     }
                     //List
-                    ItemLocationList(itemLocationModelList = itemLocationModelList, selectedLocation, true)
+                    ItemLocationList(
+                        itemLocationModelList = itemLocationModelList,
+                        selectedLocation,
+                        true
+                    )
 
                 }
                 imageBtnEnabled = itemImageCount.value != 0
 
-/*                if (imageByteArray.value.isNotEmpty() && imageDialogVisible.value) {
-                    isLoading = false
-                    ShowPictureDialog(
-                        data = imageByteArray,
-                        imageDialogVisible,
-                        imageIdx,
-                        productImageCount,
-                        selectedProduct.value!!
-                    )
-                }*/
+                /*                if (imageByteArray.value.isNotEmpty() && imageDialogVisible.value) {
+                                    isLoading = false
+                                    ShowPictureDialog(
+                                        data = imageByteArray,
+                                        imageDialogVisible,
+                                        imageIdx,
+                                        productImageCount,
+                                        selectedProduct.value!!
+                                    )
+                                }*/
             }
         }
     }

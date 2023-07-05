@@ -64,4 +64,7 @@
     <string name="exit">Çıkış</string>
     <string name="you_will_logout">Hesaptan çıkılacak.</string>
 
+    <string name="ask_amount">%1$s ürününü %2$s konumundan kaç adet almak istiyorsunuz?</string>
+    <string name="no_location_selected">Konum seçilmedi.</string>
+
 </resources>

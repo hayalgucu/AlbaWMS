@@ -9,7 +9,7 @@ data class ShelfModel(
     @SerialName("altkonum")
     val altkonum: String,
     @SerialName("_altkonum")
-    val subLocations: SubLocation,
+    val subLocations: SubLocation?,
     @SerialName("hcr_create_date")
     val hcrCreateDate: String,
     @SerialName("hcr_create_user")

@@ -6,10 +6,12 @@ import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
 import com.hayalgucu.albawms.models.ItemsInLocationModel
 import com.hayalgucu.albawms.models.LocationInfoModel
+import com.hayalgucu.albawms.models.LocationListModel
 import com.hayalgucu.albawms.models.LocationModel
 import com.hayalgucu.albawms.models.LoginModel
 import com.hayalgucu.albawms.models.LoginResponseModel
 import com.hayalgucu.albawms.models.MachineModel
+import com.hayalgucu.albawms.models.ProgramUpdateModel
 import com.hayalgucu.albawms.models.ResponseModel
 import com.hayalgucu.albawms.models.ShelfModel
 import com.hayalgucu.albawms.models.TakeItemConfirmationModel
@@ -26,6 +28,7 @@ interface ApiService {
     suspend fun getLocationList(getLocationListModel: GetLocationListModel): ResponseModel<List<LocationModel>>
     suspend fun getItemsInLocation(location: String): ResponseModel<List<ItemsInLocationModel>>
     suspend fun getLocation(location: String): ResponseModel<LocationInfoModel>
+    suspend fun getAllLocations(): ResponseModel<List<LocationListModel>>
 
     //Machine
     suspend fun getMachineList(): ResponseModel<List<MachineModel>>
@@ -47,6 +50,9 @@ interface ApiService {
     suspend fun setConfirmationTakeItem(takeItemConfirmationModel: TakeItemConfirmationModel): ResponseModel<Boolean>
     suspend fun setConfirmationItemPlacement(takeItemConfirmationModel: TakeItemConfirmationModel): ResponseModel<Boolean>
     suspend fun placeStockToShelf(takeItemConfirmationModel: TakeItemConfirmationModel): ResponseModel<Boolean>
+
+    //App Info
+    suspend fun getAppVersion(appId: Int): ResponseModel<ProgramUpdateModel>
 
 
     companion object {

@@ -10,6 +10,7 @@ object HttpRoutes {
     const val GetLocationList = "api/Location/GetListLocation"
     const val GetItemsInLocation = "api/Location/GetStocksInLocation"
     const val GetLocation = "api/Location/GetLocation"
+    const val GetAllLocations = "api/Location/GetAllLocation"
 
     //Machine
     const val GetMachineList = "api/Machine/GetMachineList"

@@ -6,13 +6,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hayalgucu.albawms.R
 import com.hayalgucu.albawms.models.GetItemModel
 import com.hayalgucu.albawms.models.GetLocationListModel
 import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
+import com.hayalgucu.albawms.models.LocationListModel
+import com.hayalgucu.albawms.models.LocationModel
 import com.hayalgucu.albawms.models.TakeItemConfirmationModel
 import com.hayalgucu.albawms.prefstore.PrefsStore
 import com.hayalgucu.albawms.services.api.ApiService
@@ -29,7 +30,15 @@ class AddRemoveItemViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
+    val showLocationDialog = mutableStateOf(false)
+    val locationList = mutableStateListOf<LocationListModel>()
+
     val context = getApplication<Application>()
+
+    val addEnabled = mutableStateOf(true)
+    val removeEnabled = mutableStateOf(true)
+
+    val locationText = mutableStateOf("")
 
     var errorMessage = mutableStateOf("")
     var isLoading = mutableStateOf(false)
@@ -190,6 +199,14 @@ class AddRemoveItemViewModel @Inject constructor(
                 val result = response.data
                 if (result != null) {
                     resultValue.value = result
+                    if (resultValue.value!!.stkVarKonum != "") {
+                        locationText.value = resultValue.value!!.stkVarKonum
+                        getLocationStok(item.value!!.stkKodu, locationText.value)
+/*                        if (removeEnabled.value)
+                            getLocationStok(item.value!!.stkKodu, locationText.value)
+                        else if (addEnabled.value)
+                            checkIsLocationValid(locationText.value)*/
+                    }
                     getLocation()
                 } else {
                     resultValue.value = null
@@ -220,7 +237,7 @@ class AddRemoveItemViewModel @Inject constructor(
     fun getLocationStok(stokCode: String, location: String) {
         viewModelScope.launch {
             isLoading.value = true
-            selectedLocation.value = null
+//            selectedLocation.value = null
 
             val response =
                 apiService.getItemLocationList(GetItemModel(itemCode = stokCode, quantity = -1))
@@ -235,6 +252,7 @@ class AddRemoveItemViewModel @Inject constructor(
                         0 -> {
                             errorMessage.value = context.getString(R.string.item_notin_location)
                             productLocationQuantity.value = -1
+                            selectedLocation.value = null
                         }
 
                         1 -> {
@@ -248,6 +266,7 @@ class AddRemoveItemViewModel @Inject constructor(
                     }
                 }
             } else {
+                selectedLocation.value = null
                 errorMessage.value = response.error?.errors?.first() ?: "Error"
             }
         }
@@ -272,6 +291,23 @@ class AddRemoveItemViewModel @Inject constructor(
                 }
             } else {
                 itemLocations.value = listOf()
+            }
+        }
+    }
+
+    fun getAllLocations() {
+        viewModelScope.launch {
+            locationList.clear()
+            val response = apiService.getAllLocations()
+
+            if (response.isSuccessful) {
+                isLoading.value = false
+
+                response.data?.let { locationList.addAll(it) }
+
+                showLocationDialog.value = true
+            } else {
+                errorMessage.value = response.error?.errors?.first() ?: "Error"
             }
         }
     }
