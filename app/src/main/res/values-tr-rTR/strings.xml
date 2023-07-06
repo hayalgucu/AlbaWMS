@@ -66,5 +66,7 @@
 
     <string name="ask_amount">%1$s ürününü %2$s konumundan kaç adet almak istiyorsunuz?</string>
     <string name="no_location_selected">Konum seçilmedi.</string>
+    <string name="above_max">Eklemek istediğiniz miktar ile bu ürünün maksimum seviyesi aşılacaktır. Devam etmek ister misiniz?</string>
+    <string name="below_min">Almak istediğiniz miktar ile bu ürünün minimum seviyesi aşılacaktır. Devam etmek ister misiniz?</string>
 
 </resources>

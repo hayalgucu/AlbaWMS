@@ -15,5 +15,7 @@ data class TakeItemConfirmationModel(
     @SerialName("shelfno")
     val shelfno: Int,
     @SerialName("stockcode")
-    val stockcode: String
+    val stockcode: String,
+    @SerialName("userno")
+    val userNo: Int
 )

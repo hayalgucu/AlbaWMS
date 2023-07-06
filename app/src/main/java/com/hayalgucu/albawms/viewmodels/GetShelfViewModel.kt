@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hayalgucu.albawms.R
-import com.hayalgucu.albawms.models.GetLocationListModel
+import com.hayalgucu.albawms.models.GetLocationInfoModel
 import com.hayalgucu.albawms.services.api.ApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ class GetShelfViewModel @Inject constructor(
             }
             isLoading.value = true
 
-            val response = apiService.getShelf(GetLocationListModel(machineno = machineNo, shelfno = shelfInt))
+            val response = apiService.getShelf(GetLocationInfoModel(machineno = machineNo, shelfno = shelfInt))
             shelfNo.value = ""
 
             isLoading.value = false

@@ -56,3 +56,5 @@ val apiDateFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 val apiDateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 
 var machineList = emptyList<MachineModel>()
+
+var canUseMachine = mutableStateOf(false)

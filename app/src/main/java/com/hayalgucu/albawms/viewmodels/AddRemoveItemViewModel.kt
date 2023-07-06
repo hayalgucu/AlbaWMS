@@ -9,14 +9,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.hayalgucu.albawms.R
 import com.hayalgucu.albawms.models.GetItemModel
-import com.hayalgucu.albawms.models.GetLocationListModel
 import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
-import com.hayalgucu.albawms.models.LocationListModel
-import com.hayalgucu.albawms.models.LocationModel
+import com.hayalgucu.albawms.models.LocationInfoModel
 import com.hayalgucu.albawms.models.TakeItemConfirmationModel
 import com.hayalgucu.albawms.prefstore.PrefsStore
 import com.hayalgucu.albawms.services.api.ApiService
+import com.hayalgucu.albawms.util.toItemLocationModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -31,7 +30,7 @@ class AddRemoveItemViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     val showLocationDialog = mutableStateOf(false)
-    val locationList = mutableStateListOf<LocationListModel>()
+    val locationList = mutableStateListOf<LocationInfoModel>()
 
     val context = getApplication<Application>()
 
@@ -56,8 +55,17 @@ class AddRemoveItemViewModel @Inject constructor(
 
     val askForConfirmation = mutableStateOf(false)
 
+    private var userId: Int = -1
+
     init {
         getKeyboardOptions()
+        getUserId()
+    }
+
+    private fun getUserId() {
+        viewModelScope.launch {
+            userId = prefsStore.getUserId().first().toInt()
+        }
     }
 
     private fun getKeyboardOptions() {
@@ -82,7 +90,8 @@ class AddRemoveItemViewModel @Inject constructor(
                         location = location,
                         quantity = quantity,
                         machineno = segments.first(),
-                        shelfno = segments.last()
+                        shelfno = segments.last(),
+                        userNo = userId
                     )
                 )
 
@@ -108,7 +117,8 @@ class AddRemoveItemViewModel @Inject constructor(
                     location = location,
                     quantity = quantity,
                     machineno = selectedLocation.value!!.hcrMakineNo,
-                    shelfno = selectedLocation.value!!.hcrKonumNo
+                    shelfno = selectedLocation.value!!.hcrKonumNo,
+                    userNo = userId
                 )
             )
 
@@ -140,7 +150,8 @@ class AddRemoveItemViewModel @Inject constructor(
                         location = location,
                         quantity = quantity,
                         machineno = segments.first(),
-                        shelfno = segments.last()
+                        shelfno = segments.last(),
+                        userNo = userId
                     )
                 )
 
@@ -163,6 +174,17 @@ class AddRemoveItemViewModel @Inject constructor(
         } else {
             errorMessage.value = response.error?.errors?.first() ?: "Error"
             emptyList()
+        }
+    }
+
+    private suspend fun getLocation(location: String) {
+        val response = apiService.getLocation(location)
+        if (response.isSuccessful) {
+            response.data?.let {
+                selectedLocation.value = it.toItemLocationModel()
+            }
+        } else {
+            errorMessage.value = response.error?.errors?.first() ?: "Error"
         }
     }
 
@@ -201,11 +223,11 @@ class AddRemoveItemViewModel @Inject constructor(
                     resultValue.value = result
                     if (resultValue.value!!.stkVarKonum != "") {
                         locationText.value = resultValue.value!!.stkVarKonum
-                        getLocationStok(item.value!!.stkKodu, locationText.value)
-/*                        if (removeEnabled.value)
+//                        getLocationStok(item.value!!.stkKodu, locationText.value)
+                        if (removeEnabled.value)
                             getLocationStok(item.value!!.stkKodu, locationText.value)
                         else if (addEnabled.value)
-                            checkIsLocationValid(locationText.value)*/
+                            checkIsLocationValid(locationText.value)
                     }
                     getLocation()
                 } else {
@@ -229,6 +251,7 @@ class AddRemoveItemViewModel @Inject constructor(
             if (!response.isSuccessful) {
                 errorMessage.value = response.error!!.errors.first()
             } else {
+                getLocation(location)
                 isLocationValid.value = true
             }
         }

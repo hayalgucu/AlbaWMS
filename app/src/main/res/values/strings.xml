@@ -65,4 +65,6 @@
 
     <string name="ask_amount">How many of %1s do you want to take from location %2s?</string>
     <string name="no_location_selected">No location selected.</string>
+    <string name="above_max">With the amount you want to add, this item\'s max level will be exceed.\nWould you like the proceed?</string>
+    <string name="below_min">With the amount you want to take, this item\'s min level will be exceed.\nWould you like the proceed?</string>
 </resources>

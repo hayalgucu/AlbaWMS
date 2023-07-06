@@ -1,12 +1,11 @@
 package com.hayalgucu.albawms.services.api
 
 import com.hayalgucu.albawms.models.GetItemModel
-import com.hayalgucu.albawms.models.GetLocationListModel
+import com.hayalgucu.albawms.models.GetLocationInfoModel
 import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
 import com.hayalgucu.albawms.models.ItemsInLocationModel
 import com.hayalgucu.albawms.models.LocationInfoModel
-import com.hayalgucu.albawms.models.LocationListModel
 import com.hayalgucu.albawms.models.LocationModel
 import com.hayalgucu.albawms.models.LoginModel
 import com.hayalgucu.albawms.models.LoginResponseModel
@@ -25,16 +24,16 @@ interface ApiService {
 
     //Location
     suspend fun getShelfList(machineList: Array<Int>): ResponseModel<List<ShelfModel>>
-    suspend fun getLocationList(getLocationListModel: GetLocationListModel): ResponseModel<List<LocationModel>>
+    suspend fun getLocationList(getLocationInfoModel: GetLocationInfoModel): ResponseModel<List<LocationModel>>
     suspend fun getItemsInLocation(location: String): ResponseModel<List<ItemsInLocationModel>>
     suspend fun getLocation(location: String): ResponseModel<LocationInfoModel>
-    suspend fun getAllLocations(): ResponseModel<List<LocationListModel>>
+    suspend fun getAllLocations(): ResponseModel<List<LocationInfoModel>>
 
     //Machine
     suspend fun getMachineList(): ResponseModel<List<MachineModel>>
 
     //Shelf
-    suspend fun getShelf(getLocationListModel: GetLocationListModel): ResponseModel<String>
+    suspend fun getShelf(getLocationInfoModel: GetLocationInfoModel): ResponseModel<String>
     suspend fun parkShelf(machineNumber: Int): ResponseModel<Boolean>
 
     //Stock

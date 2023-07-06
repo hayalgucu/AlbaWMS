@@ -12,6 +12,7 @@ import com.hayalgucu.albawms.BuildConfig
 import com.hayalgucu.albawms.models.LoginModel
 import com.hayalgucu.albawms.prefstore.PrefsStore
 import com.hayalgucu.albawms.services.api.ApiService
+import com.hayalgucu.albawms.util.canUseMachine
 import com.hayalgucu.albawms.util.inactivityTime
 import com.hayalgucu.albawms.util.machineList
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,6 +89,7 @@ class LoginViewModel @Inject constructor(
             if (response.isSuccessful) {
                 prefsStore.saveUsername(username)
                 prefsStore.saveUser(response.data!!.usrRecno)
+                canUseMachine.value = response.data.usrUseMachine || response.data.usrAdmin
                 getMachines()
             } else {
                 errorMessage.value = response.error!!.errors.first()

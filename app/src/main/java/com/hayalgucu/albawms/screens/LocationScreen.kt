@@ -39,6 +39,7 @@ import com.hayalgucu.albawms.customviews.ItemSearchBox
 import com.hayalgucu.albawms.customviews.LocationList
 import com.hayalgucu.albawms.ui.theme.AlbaWMSTheme
 import com.hayalgucu.albawms.util.ScannerOptions
+import com.hayalgucu.albawms.util.canUseMachine
 import com.hayalgucu.albawms.viewmodels.LocationViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -165,11 +166,11 @@ fun LocationScreen(
                 IconButton(modifier = Modifier.weight(.2f), onClick = {
                     //Call Tray
                     viewModel.callShelf()
-                }, enabled = viewModel.selectedLocation.value != "") {
+                }, enabled = viewModel.selectedLocation.value != "" && canUseMachine.value) {
                     CustomIcon(
                         icon = Icons.Rounded.Unarchive,
                         cd = "Call Tray",
-                        enabled = viewModel.selectedLocation.value != ""
+                        enabled = viewModel.selectedLocation.value != "" && canUseMachine.value
                     )
                 }
             }

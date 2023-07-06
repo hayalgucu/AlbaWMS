@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hayalgucu.albawms.R
 import com.hayalgucu.albawms.models.GetItemModel
-import com.hayalgucu.albawms.models.GetLocationListModel
+import com.hayalgucu.albawms.models.GetLocationInfoModel
 import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
 import com.hayalgucu.albawms.models.TakeItemConfirmationModel
@@ -49,8 +49,16 @@ class ItemInfoViewModel @Inject constructor(
 
     val shelfCame = mutableStateOf(false)
 
+    private var userId = -1
+
     init {
         getKeyboardOptions()
+    }
+
+    private fun getUserId() {
+        viewModelScope.launch {
+            userId = prefsStore.getUserId().first().toInt()
+        }
     }
 
     private fun getKeyboardOptions() {
@@ -65,7 +73,7 @@ class ItemInfoViewModel @Inject constructor(
                 isLoading.value = true
                 val machineNo = loc.hcrMakineNo
                 val shelfNo = loc.hcrKonumNo
-                val response = apiService.getShelf(GetLocationListModel(machineno = machineNo, shelfno = shelfNo))
+                val response = apiService.getShelf(GetLocationInfoModel(machineno = machineNo, shelfno = shelfNo))
                 isLoading.value = false
                 shelfCame.value = response.isSuccessful
                 response.error?.errors?.let {
@@ -85,7 +93,8 @@ class ItemInfoViewModel @Inject constructor(
                     location = location,
                     quantity = quantity,
                     machineno = selectedLocation.value!!.hcrMakineNo,
-                    shelfno = selectedLocation.value!!.hcrKonumNo
+                    shelfno = selectedLocation.value!!.hcrKonumNo,
+                    userNo = userId
                 )
             )
 

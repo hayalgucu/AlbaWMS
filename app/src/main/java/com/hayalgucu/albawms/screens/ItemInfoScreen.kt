@@ -54,6 +54,7 @@ import com.hayalgucu.albawms.models.ItemModel
 import com.hayalgucu.albawms.ui.theme.AlbaWMSTheme
 import com.hayalgucu.albawms.util.ScannerOptions
 import com.hayalgucu.albawms.util.ShowAlertDialog
+import com.hayalgucu.albawms.util.canUseMachine
 import com.hayalgucu.albawms.util.scaffoldPadding
 import com.hayalgucu.albawms.util.searchParams
 import com.hayalgucu.albawms.viewmodels.ItemInfoViewModel
@@ -404,11 +405,11 @@ fun ItemInfoScreen(
 
                         IconButton(onClick = {
                             viewModel.getShelf()
-                        }, enabled = selectedLocation.value != null) {
+                        }, enabled = (selectedLocation.value != null && canUseMachine.value)) {
                             CustomIcon(
                                 icon = Icons.Rounded.Unarchive,
                                 cd = "Bring Tray",
-                                enabled = selectedLocation.value != null
+                                enabled = selectedLocation.value != null && canUseMachine.value
                             )
                         }
 

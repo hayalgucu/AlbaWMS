@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -62,7 +63,6 @@ import com.hayalgucu.albawms.ui.theme.AlbaWMSTheme
 import com.hayalgucu.albawms.ui.theme.Primary200
 import com.hayalgucu.albawms.util.ScannerOptions
 import com.hayalgucu.albawms.util.largeWidth
-import com.hayalgucu.albawms.util.midWidth
 import com.hayalgucu.albawms.util.scaffoldPadding
 import com.hayalgucu.albawms.util.suffix
 import com.hayalgucu.albawms.util.toItemLocationModel
@@ -114,6 +114,8 @@ fun AddRemoveItemScreen(
 
     var showLocationDialog by remember { viewModel.showLocationDialog }
     var locationList = remember { viewModel.locationList }
+
+    var showMinMaxWarning by remember { mutableStateOf(false) }
 
 
     LaunchedEffect(isSuccess) {
@@ -192,6 +194,52 @@ fun AddRemoveItemScreen(
                 Dialog(onDismissRequest = {}) {
                     CircularProgressIndicator(color = MaterialTheme.colors.primary)
                 }
+            }
+
+            if (showMinMaxWarning) {
+                AlertDialog(
+                    onDismissRequest = { showMinMaxWarning = false },
+                    title = { Text(text = stringResource(id = R.string.warning)) },
+                    text = {
+                        when {
+                            addEnabled && !removeEnabled -> {
+                                Text(text = stringResource(R.string.above_max))
+                            }
+
+                            !addEnabled && removeEnabled -> {
+                                Text(text = stringResource(R.string.below_min))
+                            }
+
+                            else -> {
+                                Text(text = "")
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        Button(onClick = {
+                            showMinMaxWarning = false
+                            if (addEnabled && !removeEnabled) {
+                                viewModel.placeItemToShelf(
+                                    itemText.value,
+                                    locationText.value,
+                                    quantityText.value.toInt()
+                                )
+                            } else if (!addEnabled && removeEnabled) {
+                                viewModel.takeItemFromShelf(
+                                    itemText.value,
+                                    quantityText.value.toInt()
+                                )
+                            }
+                        }) {
+                            Text(text = stringResource(id = R.string.ok))
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { /*TODO*/ }) {
+                            Text(text = stringResource(id = R.string.cancel))
+                        }
+                    }
+                )
             }
 
             if (errorMessage.isNotEmpty()) {
@@ -403,16 +451,24 @@ fun AddRemoveItemScreen(
                 }
                 IconButton(onClick = {
                     if (addEnabled && !removeEnabled) {
-                        viewModel.placeItemToShelf(
-                            itemText.value,
-                            locationText.value,
-                            quantityText.value.toInt()
-                        )
+                        if (item!!.depoMiktari + quantityText.value.toDouble() > item!!.stkMaxSeviye && item!!.stkMaxSeviye != 0.0) {
+                            showMinMaxWarning = true
+                        } else {
+                            viewModel.placeItemToShelf(
+                                itemText.value,
+                                locationText.value,
+                                quantityText.value.toInt()
+                            )
+                        }
                     } else if (removeEnabled && !addEnabled) {
-                        viewModel.takeItemFromShelf(
-                            itemText.value,
-                            quantityText.value.toInt()
-                        )
+                        if (item!!.depoMiktari - quantityText.value.toDouble() < item!!.stkKritikSeviye && item!!.stkKritikSeviye != 0.0) {
+                            showMinMaxWarning = true
+                        } else {
+                            viewModel.takeItemFromShelf(
+                                itemText.value,
+                                quantityText.value.toInt()
+                            )
+                        }
                     }
                 }, enabled = doneEnable) {
                     CustomIcon(icon = Icons.Rounded.Done, cd = "Onayla", enabled = doneEnable)
@@ -577,15 +633,11 @@ fun AddRemoveItemScreen(
 
             if (itemLocations.isNotEmpty()) {
                 //List
-                if (itemLocations.size > 1) {
-                    ItemLocationList(
-                        itemLocationModelList = viewModel.locations,
-                        selectedLocation,
-                        isClickable = true
-                    )
-                } else {
-                    ItemLocationList(itemLocationModelList = viewModel.locations)
-                }
+                ItemLocationList(
+                    itemLocationModelList = viewModel.locations,
+                    selectedLocation,
+                    isClickable = true
+                )
             }
         }
     }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hayalgucu.albawms.models.GetLocationListModel
+import com.hayalgucu.albawms.models.GetLocationInfoModel
 import com.hayalgucu.albawms.models.ItemModel
 import com.hayalgucu.albawms.models.ItemsInLocationModel
 import com.hayalgucu.albawms.prefstore.PrefsStore
@@ -63,7 +63,7 @@ class LocationViewModel @Inject constructor(
                     return@runBlocking
                 }
                 val response = apiService.getShelf(
-                    GetLocationListModel(
+                    GetLocationInfoModel(
                         machineno = segments.first(),
                         shelfno = segments.last()
                     )

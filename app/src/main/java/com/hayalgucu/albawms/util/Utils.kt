@@ -1,14 +1,13 @@
 package com.hayalgucu.albawms.util
 
 import com.hayalgucu.albawms.models.ItemLocationModel
-import com.hayalgucu.albawms.models.LocationListModel
-import com.hayalgucu.albawms.models.LocationModel
+import com.hayalgucu.albawms.models.LocationInfoModel
 import java.net.Inet6Address
 import java.net.NetworkInterface
 import java.util.Collections
 import kotlin.experimental.xor
 
-fun LocationListModel.toItemLocationModel(): ItemLocationModel =
+fun LocationInfoModel.toItemLocationModel(): ItemLocationModel =
     ItemLocationModel(altkonum = location, hcrKonumNo = shelfNo, hcrMakineNo = machineNumber, sipStokKodu = "", stkAdi = "")
 
 fun getMacAddressFromIP(): String {

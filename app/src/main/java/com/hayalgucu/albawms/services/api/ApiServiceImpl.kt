@@ -2,12 +2,11 @@ package com.hayalgucu.albawms.services.api
 
 import com.hayalgucu.albawms.models.ErrorModel
 import com.hayalgucu.albawms.models.GetItemModel
-import com.hayalgucu.albawms.models.GetLocationListModel
+import com.hayalgucu.albawms.models.GetLocationInfoModel
 import com.hayalgucu.albawms.models.ItemLocationModel
 import com.hayalgucu.albawms.models.ItemModel
 import com.hayalgucu.albawms.models.ItemsInLocationModel
 import com.hayalgucu.albawms.models.LocationInfoModel
-import com.hayalgucu.albawms.models.LocationListModel
 import com.hayalgucu.albawms.models.LocationModel
 import com.hayalgucu.albawms.models.LoginModel
 import com.hayalgucu.albawms.models.LoginResponseModel
@@ -16,7 +15,6 @@ import com.hayalgucu.albawms.models.ProgramUpdateModel
 import com.hayalgucu.albawms.models.ResponseModel
 import com.hayalgucu.albawms.models.ShelfModel
 import com.hayalgucu.albawms.models.TakeItemConfirmationModel
-import com.hayalgucu.albawms.util.machineList
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
@@ -80,10 +78,10 @@ class ApiServiceImpl(private val url: String) : ApiService {
         }
     }
 
-    override suspend fun getLocationList(getLocationListModel: GetLocationListModel): ResponseModel<List<LocationModel>> {
+    override suspend fun getLocationList(getLocationInfoModel: GetLocationInfoModel): ResponseModel<List<LocationModel>> {
         return getApiCall {
             client.post("$url/${HttpRoutes.GetLocationList}") {
-                setBody(getLocationListModel)
+                setBody(getLocationInfoModel)
             }.body()
         }
     }
@@ -104,7 +102,7 @@ class ApiServiceImpl(private val url: String) : ApiService {
         }
     }
 
-    override suspend fun getAllLocations(): ResponseModel<List<LocationListModel>> {
+    override suspend fun getAllLocations(): ResponseModel<List<LocationInfoModel>> {
         return getApiCall {
             client.post("$url/${HttpRoutes.GetAllLocations}") {
                 setBody(emptyArray<Int>())
@@ -120,10 +118,10 @@ class ApiServiceImpl(private val url: String) : ApiService {
     }
 
     //Shelf
-    override suspend fun getShelf(getLocationListModel: GetLocationListModel): ResponseModel<String> {
+    override suspend fun getShelf(getLocationInfoModel: GetLocationInfoModel): ResponseModel<String> {
         return getApiCall {
             client.post("$url/${HttpRoutes.GetShelf}") {
-                setBody(getLocationListModel)
+                setBody(getLocationInfoModel)
             }.body()
         }
     }

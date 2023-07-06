@@ -22,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,6 +33,7 @@ import androidx.navigation.NavController
 import com.hayalgucu.albawms.R
 import com.hayalgucu.albawms.prefstore.PrefStoreImpl
 import com.hayalgucu.albawms.ui.theme.AlbaWMSTheme
+import com.hayalgucu.albawms.util.canUseMachine
 import com.hayalgucu.albawms.util.iconSize
 import com.hayalgucu.albawms.util.scaffoldPadding
 import kotlinx.coroutines.GlobalScope
@@ -112,7 +115,8 @@ fun MainScreen(navController: NavController) {
                     onClick = { navController.navigate("get_shelf_screen") },
                     modifier = Modifier
                         .width(64.dp)
-                        .height(112.dp)
+                        .height(112.dp),
+                    enabled = canUseMachine.value
                 ) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -124,7 +128,8 @@ fun MainScreen(navController: NavController) {
                             contentDescription = "",
                             Modifier.size(
                                 iconSize
-                            )
+                            ),
+                            colorFilter = if (canUseMachine.value) null else ColorFilter.tint(Color.Gray)
                         )
                         Text(
                             text = stringResource(R.string.call_tray),
@@ -145,8 +150,8 @@ fun MainScreen(navController: NavController) {
                 IconButton(
                     onClick = { navController.navigate("take_item_screen") },
                     modifier = Modifier
-                        .width(64.dp)
-//                        .height(112.dp)
+                        .width(64.dp),
+                    enabled = canUseMachine.value
                 ) {
                     Column(
                         //Modifier.fillMaxSize(),
@@ -158,7 +163,8 @@ fun MainScreen(navController: NavController) {
                             contentDescription = "",
                             Modifier.size(
                                 iconSize
-                            )
+                            ),
+                            colorFilter = if (canUseMachine.value) null else ColorFilter.tint(Color.Gray)
                         )
                         Text(
                             text = stringResource(R.string.take_place_item),
